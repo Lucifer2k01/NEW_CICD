@@ -1,0 +1,37 @@
+trigger:
+  path:
+    include:
+      - result/*
+
+vmImage: 'ubuntu-latest'
+
+variables:
+  docker_id: 'arvind2k01'
+  docker_password: 'arvind@123'
+  img_tag: '1.$BUILD_NUMBER'
+
+jobs:
+- job:
+    steps:
+    - script: docker login -u $docker_id -p $docker_password
+      displayName: 'Docker login'
+
+- job:
+    steps:
+    - script: docker buid -t img_tag .
+      displayName: 'Docker build -t $img_tag .'  
+
+- job:
+    steps:
+    - script: docker push $docker_id/$img_tag
+      displayName: 'Docker push'
+
+- job:
+    steps:
+    - script: docker run -d -p 80:80 $docker_id/$img_tag
+      displayName: 'Docker run'
+
+
+#
+# Still in progress
+#
